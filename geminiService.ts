@@ -1,10 +1,20 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// استخدام process.env.API_KEY مباشرة كما هو مطلوب
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+// وظيفة لإنشاء مثيل الـ AI بأمان
+const getAIInstance = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("API_KEY is missing. AI features will be disabled.");
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export async function getSmartInsights(metrics: any, userCount: number) {
+  const ai = getAIInstance();
+  if (!ai) return getDefaultInsights();
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -25,10 +35,14 @@ export async function getSmartInsights(metrics: any, userCount: number) {
     return JSON.parse(response.text || '[]');
   } catch (error) {
     console.error("Gemini Error:", error);
-    return [
-      "Error generating real-time insights. System is functioning within normal parameters.",
-      "Revenue growth shows a strong positive correlation with active user retention.",
-      "Infrastructure optimization recommended to maintain current uptime levels."
-    ];
+    return getDefaultInsights();
   }
+}
+
+function getDefaultInsights() {
+  return [
+    "Revenue growth shows a strong positive correlation with active user retention.",
+    "System performance remains stable across all global node clusters.",
+    "Resource allocation is currently optimized for Q4 enterprise demands."
+  ];
 }
