@@ -1,7 +1,8 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// استخدام process.env.API_KEY مباشرة كما هو مطلوب
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
 export async function getSmartInsights(metrics: any, userCount: number) {
   try {
